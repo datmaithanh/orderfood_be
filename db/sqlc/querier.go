@@ -48,6 +48,7 @@ type Querier interface {
 	UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (Payment, error)
 	UpdateTable(ctx context.Context, arg UpdateTableParams) (Table, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateUserWithPassword(ctx context.Context, arg UpdateUserWithPasswordParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

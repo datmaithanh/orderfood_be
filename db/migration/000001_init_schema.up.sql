@@ -1,6 +1,6 @@
 CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
-  "username" varchar NOT NULL,
+  "username" varchar UNIQUE NOT NULL,
   "hash_password" varchar NOT NULL,
   "full_name" varchar NOT NULL,
   "role" varchar NOT NULL DEFAULT 'staff',

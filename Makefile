@@ -19,7 +19,10 @@ migratedown:
 sqlc:
 	sqlc generate
 
-server:
+run:
 	go run ./cmd/main/main.go
 
-PHONY: postgres createdb dropdb createschema migrateup migratedown sqlc server
+build:
+	./build_linux_amd64.sh
+
+PHONY: postgres createdb dropdb createschema migrateup migratedown sqlc run build

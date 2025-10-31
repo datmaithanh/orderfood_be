@@ -14,10 +14,9 @@ INSERT INTO users (
     username,
     hash_password,
     full_name,
-    role,
     email
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 ) RETURNING id, username, hash_password, full_name, role, email, created_at
 `
 
@@ -25,7 +24,6 @@ type CreateUserParams struct {
 	Username     string
 	HashPassword string
 	FullName     string
-	Role         string
 	Email        string
 }
 
@@ -34,7 +32,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Username,
 		arg.HashPassword,
 		arg.FullName,
-		arg.Role,
 		arg.Email,
 	)
 	var i User
@@ -82,20 +79,18 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 
 const listUser = `-- name: ListUser :many
 SELECT id, username, hash_password, full_name, role, email, created_at FROM users
-WHERE username = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListUserParams struct {
-	Username string
-	Limit    int32
-	Offset   int32
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUser, arg.Username, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listUser, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -128,29 +123,53 @@ func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, err
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET full_name = $2,
-    hash_password = $3,
-    role = $4,
-    email = $5
+    role = $3,
+    email = $4
 WHERE id = $1
 RETURNING id, username, hash_password, full_name, role, email, created_at
 `
 
 type UpdateUserParams struct {
-	ID           int64
-	FullName     string
-	HashPassword string
-	Role         string
-	Email        string
+	ID       int64
+	FullName string
+	Role     string
+	Email    string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.ID,
 		arg.FullName,
-		arg.HashPassword,
 		arg.Role,
 		arg.Email,
 	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashPassword,
+		&i.FullName,
+		&i.Role,
+		&i.Email,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateUserWithPassword = `-- name: UpdateUserWithPassword :one
+UPDATE users
+SET hash_password = $2
+WHERE id = $1
+RETURNING id, username, hash_password, full_name, role, email, created_at
+`
+
+type UpdateUserWithPasswordParams struct {
+	ID           int64
+	HashPassword string
+}
+
+func (q *Queries) UpdateUserWithPassword(ctx context.Context, arg UpdateUserWithPasswordParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserWithPassword, arg.ID, arg.HashPassword)
 	var i User
 	err := row.Scan(
 		&i.ID,

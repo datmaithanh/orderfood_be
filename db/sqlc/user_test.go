@@ -13,7 +13,6 @@ func TestCreateUser(t *testing.T) {
 		Username:     utils.RandomString(6),
 		HashPassword: "secret",
 		FullName:     utils.RandomString(6),
-		Role:         utils.RandomRole(),
 		Email:        utils.RandomString(6) + "@gmail.com",
 	}
 
@@ -21,7 +20,6 @@ func TestCreateUser(t *testing.T) {
 		Username:     user1.Username,
 		HashPassword: user1.HashPassword,
 		FullName:     user1.FullName,
-		Role:         user1.Role,
 		Email:        user1.Email,
 	})
 
@@ -31,7 +29,6 @@ func TestCreateUser(t *testing.T) {
 	require.Equal(t, user1.Username, user2.Username)
 	require.Equal(t, user1.HashPassword, user2.HashPassword)
 	require.Equal(t, user1.FullName, user2.FullName)
-	require.Equal(t, user1.Role, user2.Role)
 	require.Equal(t, user1.Email, user2.Email)
 
 	require.NotZero(t, user2.ID)
@@ -43,7 +40,6 @@ func TestGetUser(t *testing.T) {
 		Username:     utils.RandomString(6),
 		HashPassword: "secret",
 		FullName:     utils.RandomString(6),
-		Role:         utils.RandomRole(),
 		Email:        utils.RandomString(6) + "@gmail.com",
 	}
 
@@ -51,7 +47,6 @@ func TestGetUser(t *testing.T) {
 		Username:     user1.Username,
 		HashPassword: user1.HashPassword,
 		FullName:     user1.FullName,
-		Role:         user1.Role,
 		Email:        user1.Email,
 	})
 	require.NoError(t, err)
@@ -75,7 +70,6 @@ func TestDeleteUser(t *testing.T) {
 		Username:     utils.RandomString(6),
 		HashPassword: "secret",
 		FullName:     utils.RandomString(6),
-		Role:         utils.RandomRole(),
 		Email:        utils.RandomString(6) + "@gmail.com",
 	}
 
@@ -83,7 +77,6 @@ func TestDeleteUser(t *testing.T) {
 		Username:     user1.Username,
 		HashPassword: user1.HashPassword,
 		FullName:     user1.FullName,
-		Role:         user1.Role,
 		Email:        user1.Email,
 	})
 	require.NoError(t, err)
@@ -96,4 +89,3 @@ func TestDeleteUser(t *testing.T) {
 	require.Error(t, err)
 	require.Empty(t, userFetched)
 }
-
