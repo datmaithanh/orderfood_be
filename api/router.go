@@ -5,6 +5,7 @@ import "github.com/gin-gonic/gin"
 func (server *Server) setupRouter() *gin.Engine {
 	router := gin.Default()
 	
+	router.POST("/users/login", server.loginUser)
 
 	router.POST("/users", server.createUser)
 	router.GET("/users/:id", server.getUser)

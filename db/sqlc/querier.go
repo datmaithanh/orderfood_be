@@ -33,6 +33,7 @@ type Querier interface {
 	GetPayment(ctx context.Context, id int64) (Payment, error)
 	GetTable(ctx context.Context, id int64) (Table, error)
 	GetUser(ctx context.Context, id int64) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCategory(ctx context.Context, arg ListCategoryParams) ([]Category, error)
 	ListCustomer(ctx context.Context, arg ListCustomerParams) ([]Customer, error)
 	ListMenu(ctx context.Context, arg ListMenuParams) ([]Menu, error)
