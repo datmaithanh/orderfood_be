@@ -7,12 +7,14 @@ func (server *Server) setupRouter() *gin.Engine {
 	
 	router.POST("/users/login", server.loginUser)
 
-	router.POST("/users", server.createUser)
-	router.GET("/users/:id", server.getUser)
-	router.GET("/users", server.listUsers)
-	router.DELETE("/users/:id", server.deleteUser)
-	router.PUT("users/:id", server.updateUser)
-	router.PATCH("users/password/:id", server.updateUserWithPassword)
+	authRouter := router.Group("/").Use(authMiddleware(server.tokenMaker))
+
+	authRouter.POST("/users", server.createUser)
+	authRouter.GET("/users/:id", server.getUser)
+	authRouter.GET("/users", server.listUsers)
+	authRouter.DELETE("/users/:id", server.deleteUser)
+	authRouter.PUT("users/:id", server.updateUser)
+	authRouter.PATCH("users/password/:id", server.updateUserWithPassword)
 
 	server.router = router
 	return router
