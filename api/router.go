@@ -46,7 +46,10 @@ func (server *Server) setupRouter() *gin.Engine {
 
 	// Auth Table routes
 	authRouter.POST("/tables", server.createTable)
-	
+	authRouter.GET("/tables/:id", server.getTable)
+	authRouter.GET("/tables", server.listTables)
+	authRouter.PATCH("/tables/:id", server.updateTableStatus)
+	authRouter.DELETE("/tables/:id", server.deleteTable)
 
 	server.router = router
 	return router

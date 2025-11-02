@@ -16,10 +16,9 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListTable :many
 SELECT * FROM tables
-WHERE name = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3;
+LIMIT $1
+OFFSET $2;
 
 -- name: UpdateTable :one
 UPDATE tables
