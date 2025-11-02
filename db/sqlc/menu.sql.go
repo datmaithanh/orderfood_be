@@ -70,20 +70,18 @@ func (q *Queries) GetMenu(ctx context.Context, id int64) (Menu, error) {
 
 const listMenu = `-- name: ListMenu :many
 SELECT id, name, price, category_id, status, created_at FROM menus
-WHERE name = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListMenuParams struct {
-	Name   string
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListMenu(ctx context.Context, arg ListMenuParams) ([]Menu, error) {
-	rows, err := q.db.QueryContext(ctx, listMenu, arg.Name, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listMenu, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

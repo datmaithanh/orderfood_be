@@ -30,12 +30,20 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter.GET("/customers", server.listCustomer)
 	authRouter.DELETE("/customers/:id", server.deleteCustomer)
 	
-	// Category routes
+	//Auth Category routes
 	authRouter.POST("/categories", server.createCategory)
 	authRouter.GET("/categories/:id", server.getCategory)
 	authRouter.GET("/categories", server.listCategory)
 	authRouter.DELETE("/categories/:id", server.deleteCategory)
 	authRouter.PATCH("/categories/:id", server.updateCategory)
+
+	//Auth Menu routes
+	authRouter.POST("/menus", server.createMenu)
+	authRouter.GET("/menus/:id", server.getMenu)
+	authRouter.GET("/menus", server.listMenu)
+	authRouter.DELETE("/menus/:id", server.deleteMenu)
+	authRouter.PATCH("/menus/:id", server.updateMenu)
+
 	server.router = router
 	return router
 }
