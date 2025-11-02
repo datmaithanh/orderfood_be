@@ -13,10 +13,9 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListCustomer :many
 SELECT * FROM customers
-WHERE phone_number = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3;
+LIMIT $1
+OFFSET $2;
 
 -- name: DeleteCustomer :exec
 DELETE FROM customers

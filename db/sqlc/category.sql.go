@@ -48,20 +48,18 @@ func (q *Queries) GetCategory(ctx context.Context, id int64) (Category, error) {
 
 const listCategory = `-- name: ListCategory :many
 SELECT id, name, created_at FROM categories
-WHERE name = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListCategoryParams struct {
-	Name   string
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListCategory(ctx context.Context, arg ListCategoryParams) ([]Category, error) {
-	rows, err := q.db.QueryContext(ctx, listCategory, arg.Name, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listCategory, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
