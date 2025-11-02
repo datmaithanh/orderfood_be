@@ -34,8 +34,8 @@ CREATE TABLE "menus" (
 CREATE TABLE "tables" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
-  "qr_text" varchar(255) NOT NULL,
-  "qr_image_url" varchar(255),
+  "qr_text" varchar(255) NOT NULL DEFAULT '',
+  "qr_image_url" varchar(255) NOT NULL DEFAULT '',
   "status" varchar(20) NOT NULL DEFAULT 'available',
   "created_at" timestamp NOT NULL DEFAULT 'now()'
 );

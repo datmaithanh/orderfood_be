@@ -27,6 +27,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetCustomer(ctx context.Context, id int64) (Customer, error)
+	GetMaxTableID(ctx context.Context) (interface{}, error)
 	GetMenu(ctx context.Context, id int64) (Menu, error)
 	GetOrder(ctx context.Context, id int64) (Order, error)
 	GetOrderItem(ctx context.Context, id int64) (OrderItem, error)

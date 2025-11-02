@@ -44,6 +44,10 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter.DELETE("/menus/:id", server.deleteMenu)
 	authRouter.PATCH("/menus/:id", server.updateMenu)
 
+	// Auth Table routes
+	authRouter.POST("/tables", server.createTable)
+	
+
 	server.router = router
 	return router
 }

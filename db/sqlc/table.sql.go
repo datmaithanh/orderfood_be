@@ -7,34 +7,26 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createTable = `-- name: CreateTable :one
 INSERT INTO tables (
     name,
     qr_text,
-    qr_image_url,
-    status
+    qr_image_url
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3
 ) RETURNING id, name, qr_text, qr_image_url, status, created_at
 `
 
 type CreateTableParams struct {
 	Name       string
 	QrText     string
-	QrImageUrl sql.NullString
-	Status     string
+	QrImageUrl string
 }
 
 func (q *Queries) CreateTable(ctx context.Context, arg CreateTableParams) (Table, error) {
-	row := q.db.QueryRowContext(ctx, createTable,
-		arg.Name,
-		arg.QrText,
-		arg.QrImageUrl,
-		arg.Status,
-	)
+	row := q.db.QueryRowContext(ctx, createTable, arg.Name, arg.QrText, arg.QrImageUrl)
 	var i Table
 	err := row.Scan(
 		&i.ID,
@@ -55,6 +47,17 @@ WHERE id = $1
 func (q *Queries) DeleteTable(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteTable, id)
 	return err
+}
+
+const getMaxTableID = `-- name: GetMaxTableID :one
+SELECT COALESCE(MAX(id), 0) FROM tables
+`
+
+func (q *Queries) GetMaxTableID(ctx context.Context) (interface{}, error) {
+	row := q.db.QueryRowContext(ctx, getMaxTableID)
+	var coalesce interface{}
+	err := row.Scan(&coalesce)
+	return coalesce, err
 }
 
 const getTable = `-- name: GetTable :one
@@ -134,7 +137,7 @@ type UpdateTableParams struct {
 	ID         int64
 	Name       string
 	QrText     string
-	QrImageUrl sql.NullString
+	QrImageUrl string
 	Status     string
 }
 

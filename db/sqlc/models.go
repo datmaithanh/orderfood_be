@@ -66,7 +66,7 @@ type Table struct {
 	ID         int64
 	Name       string
 	QrText     string
-	QrImageUrl sql.NullString
+	QrImageUrl string
 	Status     string
 	CreatedAt  time.Time
 }

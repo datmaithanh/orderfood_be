@@ -2,11 +2,13 @@
 INSERT INTO tables (
     name,
     qr_text,
-    qr_image_url,
-    status
+    qr_image_url
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3
 ) RETURNING *;
+
+-- name: GetMaxTableID :one
+SELECT COALESCE(MAX(id), 0) FROM tables;
 
 -- name: GetTable :one
 SELECT * FROM tables
