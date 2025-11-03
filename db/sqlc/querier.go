@@ -49,7 +49,7 @@ type Querier interface {
 	UpdateOrderItem(ctx context.Context, arg UpdateOrderItemParams) (OrderItem, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (Order, error)
 	UpdateOrderTotalPrice(ctx context.Context, arg UpdateOrderTotalPriceParams) (Order, error)
-	UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (Payment, error)
+	UpdatePaymentStatus(ctx context.Context, arg UpdatePaymentStatusParams) (Payment, error)
 	UpdateTable(ctx context.Context, arg UpdateTableParams) (Table, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 	UpdateUserWithPassword(ctx context.Context, arg UpdateUserWithPasswordParams) (User, error)

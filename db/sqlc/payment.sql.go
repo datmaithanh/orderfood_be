@@ -13,10 +13,9 @@ const createPayment = `-- name: CreatePayment :one
 INSERT INTO payments (
     order_id,
     amount,
-    payment_method,
-    status
+    payment_method
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3
 ) RETURNING id, order_id, amount, payment_method, status, created_at
 `
 
@@ -24,16 +23,10 @@ type CreatePaymentParams struct {
 	OrderID       int64
 	Amount        string
 	PaymentMethod string
-	Status        string
 }
 
 func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) (Payment, error) {
-	row := q.db.QueryRowContext(ctx, createPayment,
-		arg.OrderID,
-		arg.Amount,
-		arg.PaymentMethod,
-		arg.Status,
-	)
+	row := q.db.QueryRowContext(ctx, createPayment, arg.OrderID, arg.Amount, arg.PaymentMethod)
 	var i Payment
 	err := row.Scan(
 		&i.ID,
@@ -77,20 +70,18 @@ func (q *Queries) GetPayment(ctx context.Context, id int64) (Payment, error) {
 
 const listPayment = `-- name: ListPayment :many
 SELECT id, order_id, amount, payment_method, status, created_at FROM payments
-WHERE order_id = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListPaymentParams struct {
-	OrderID int64
-	Limit   int32
-	Offset  int32
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListPayment(ctx context.Context, arg ListPaymentParams) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, listPayment, arg.OrderID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listPayment, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -119,32 +110,20 @@ func (q *Queries) ListPayment(ctx context.Context, arg ListPaymentParams) ([]Pay
 	return items, nil
 }
 
-const updatePayment = `-- name: UpdatePayment :one
+const updatePaymentStatus = `-- name: UpdatePaymentStatus :one
 UPDATE payments
-SET order_id = $2,
-    amount = $3,
-    payment_method = $4,
-    status = $5
+SET status = $2
 WHERE id = $1
 RETURNING id, order_id, amount, payment_method, status, created_at
 `
 
-type UpdatePaymentParams struct {
-	ID            int64
-	OrderID       int64
-	Amount        string
-	PaymentMethod string
-	Status        string
+type UpdatePaymentStatusParams struct {
+	ID     int64
+	Status string
 }
 
-func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (Payment, error) {
-	row := q.db.QueryRowContext(ctx, updatePayment,
-		arg.ID,
-		arg.OrderID,
-		arg.Amount,
-		arg.PaymentMethod,
-		arg.Status,
-	)
+func (q *Queries) UpdatePaymentStatus(ctx context.Context, arg UpdatePaymentStatusParams) (Payment, error) {
+	row := q.db.QueryRowContext(ctx, updatePaymentStatus, arg.ID, arg.Status)
 	var i Payment
 	err := row.Scan(
 		&i.ID,
