@@ -64,7 +64,7 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter.GET("/orderitems/:id", server.getOrderItem)
 	authRouter.GET("/orderitems", server.listOrderItems)
 	authRouter.DELETE("/orderitems/:id", server.deleteOrderItem)
-	// authRouter.PUT("/order_items/:id", server.updateOrderItem)
+	authRouter.PUT("/order_items/:id", server.updateOrderItem)
 	server.router = router
 	return router
 }
