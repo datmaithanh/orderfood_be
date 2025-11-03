@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createOrderItem = `-- name: CreateOrderItem :one
@@ -15,11 +14,9 @@ INSERT INTO order_item (
     order_id,
     menu_id,
     quantity,
-    price,
-    note_item,
-    status
+    price
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4
 ) RETURNING id, order_id, menu_id, quantity, price, note_item, status, created_at
 `
 
@@ -28,8 +25,6 @@ type CreateOrderItemParams struct {
 	MenuID   int64
 	Quantity int32
 	Price    string
-	NoteItem sql.NullString
-	Status   string
 }
 
 func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (OrderItem, error) {
@@ -38,8 +33,6 @@ func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams
 		arg.MenuID,
 		arg.Quantity,
 		arg.Price,
-		arg.NoteItem,
-		arg.Status,
 	)
 	var i OrderItem
 	err := row.Scan(
@@ -88,20 +81,18 @@ func (q *Queries) GetOrderItem(ctx context.Context, id int64) (OrderItem, error)
 
 const listOrderItem = `-- name: ListOrderItem :many
 SELECT id, order_id, menu_id, quantity, price, note_item, status, created_at FROM order_item
-WHERE order_id = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListOrderItemParams struct {
-	OrderID int64
-	Limit   int32
-	Offset  int32
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListOrderItem(ctx context.Context, arg ListOrderItemParams) ([]OrderItem, error) {
-	rows, err := q.db.QueryContext(ctx, listOrderItem, arg.OrderID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listOrderItem, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +128,8 @@ UPDATE order_item
 SET order_id = $2,
     menu_id = $3,
     quantity = $4,
-    price = $5,
-    note_item = $6,
-    status = $7
+    note_item = $5,
+    status = $6
 WHERE id = $1
 RETURNING id, order_id, menu_id, quantity, price, note_item, status, created_at
 `
@@ -149,8 +139,7 @@ type UpdateOrderItemParams struct {
 	OrderID  int64
 	MenuID   int64
 	Quantity int32
-	Price    string
-	NoteItem sql.NullString
+	NoteItem string
 	Status   string
 }
 
@@ -160,7 +149,6 @@ func (q *Queries) UpdateOrderItem(ctx context.Context, arg UpdateOrderItemParams
 		arg.OrderID,
 		arg.MenuID,
 		arg.Quantity,
-		arg.Price,
 		arg.NoteItem,
 		arg.Status,
 	)

@@ -5,7 +5,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -48,7 +47,7 @@ type OrderItem struct {
 	MenuID    int64
 	Quantity  int32
 	Price     string
-	NoteItem  sql.NullString
+	NoteItem  string
 	Status    string
 	CreatedAt time.Time
 }

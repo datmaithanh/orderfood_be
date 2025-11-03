@@ -56,7 +56,7 @@ CREATE TABLE "order_item" (
   "menu_id" bigint NOT NULL,
   "quantity" int NOT NULL,
   "price" numeric(10,2) NOT NULL,
-  "note_item" varchar(255) DEFAULT '',
+  "note_item" varchar(255)NOT NULL DEFAULT '',
   "status" varchar(20) NOT NULL DEFAULT 'pending',
   "created_at" timestamp NOT NULL DEFAULT 'now()'
 );

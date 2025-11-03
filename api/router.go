@@ -51,6 +51,20 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter.PATCH("/tables/:id", server.updateTableStatus)
 	authRouter.DELETE("/tables/:id", server.deleteTable)
 
+	// Auth Order routes
+	authRouter.POST("/orders", server.createOrder)
+	authRouter.GET("/orders/:id", server.getOrder)
+	authRouter.GET("/orders", server.listOrders)
+	authRouter.DELETE("/orders/:id", server.deleteOrder)
+	authRouter.PUT("/orders/:id", server.updateOrder)
+	authRouter.PATCH("/orders/status/:id", server.updateOrderStatus)
+
+	// Auth Order Item routes
+	authRouter.POST("/orderitems", server.createOrderItem)
+	authRouter.GET("/orderitems/:id", server.getOrderItem)
+	authRouter.GET("/orderitems", server.listOrderItems)
+	authRouter.DELETE("/orderitems/:id", server.deleteOrderItem)
+	// authRouter.PUT("/order_items/:id", server.updateOrderItem)
 	server.router = router
 	return router
 }

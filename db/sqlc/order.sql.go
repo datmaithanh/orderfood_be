@@ -14,10 +14,9 @@ INSERT INTO orders (
     user_id,
     customer_id,
     table_id,
-    status,
     total_price
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 ) RETURNING id, user_id, customer_id, table_id, status, total_price, created_at
 `
 
@@ -25,7 +24,6 @@ type CreateOrderParams struct {
 	UserID     int64
 	CustomerID int64
 	TableID    int64
-	Status     string
 	TotalPrice string
 }
 
@@ -34,7 +32,6 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		arg.UserID,
 		arg.CustomerID,
 		arg.TableID,
-		arg.Status,
 		arg.TotalPrice,
 	)
 	var i Order
@@ -82,20 +79,18 @@ func (q *Queries) GetOrder(ctx context.Context, id int64) (Order, error) {
 
 const listOrder = `-- name: ListOrder :many
 SELECT id, user_id, customer_id, table_id, status, total_price, created_at FROM orders
-WHERE user_id = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
+LIMIT $1
+OFFSET $2
 `
 
 type ListOrderParams struct {
-	UserID int64
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListOrder(ctx context.Context, arg ListOrderParams) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, listOrder, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listOrder, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +149,60 @@ func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (Order
 		arg.Status,
 		arg.TotalPrice,
 	)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CustomerID,
+		&i.TableID,
+		&i.Status,
+		&i.TotalPrice,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateOrderStatus = `-- name: UpdateOrderStatus :one
+UPDATE orders
+SET status = $2
+WHERE id = $1
+RETURNING id, user_id, customer_id, table_id, status, total_price, created_at
+`
+
+type UpdateOrderStatusParams struct {
+	ID     int64
+	Status string
+}
+
+func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (Order, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderStatus, arg.ID, arg.Status)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CustomerID,
+		&i.TableID,
+		&i.Status,
+		&i.TotalPrice,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateOrderTotalPrice = `-- name: UpdateOrderTotalPrice :one
+UPDATE orders
+SET total_price = $2
+WHERE id = $1
+RETURNING id, user_id, customer_id, table_id, status, total_price, created_at
+`
+
+type UpdateOrderTotalPriceParams struct {
+	ID         int64
+	TotalPrice string
+}
+
+func (q *Queries) UpdateOrderTotalPrice(ctx context.Context, arg UpdateOrderTotalPriceParams) (Order, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderTotalPrice, arg.ID, arg.TotalPrice)
 	var i Order
 	err := row.Scan(
 		&i.ID,
