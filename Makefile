@@ -11,10 +11,10 @@ createschema:
 	migrate create -ext sql -dir db/migration -seq init_schema
 
 migrateup:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/orderfood?sslmode=disable" -verbose up
-	
+	migrate -path db/migration -database "postgresql://neondb_owner:npg_DRjtm1F7ThoI@ep-round-violet-a1nlcl0m.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&options=endpoint%3Dep-round-violet-a1nlcl0m" -verbose up
+
 migratedown:
-	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/orderfood?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgresql://neondb_owner:npg_DRjtm1F7ThoI@ep-round-violet-a1nlcl0m.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&options=endpoint%3Dep-round-violet-a1nlcl0m" -verbose down
 
 sqlc:
 	sqlc generate

@@ -6,6 +6,8 @@ package db
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Category struct {
@@ -59,6 +61,17 @@ type Payment struct {
 	PaymentMethod string
 	Status        string
 	CreatedAt     time.Time
+}
+
+type Session struct {
+	ID           uuid.UUID
+	UserID       int64
+	RefreshToken string
+	UserAgent    string
+	ClientIp     string
+	IsBlocked    bool
+	ExpiresAt    time.Time
+	CreatedAt    time.Time
 }
 
 type Table struct {

@@ -8,7 +8,10 @@ func (server *Server) setupRouter() *gin.Engine {
 	// Public routes
 
 	// User routes
+	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
+	router.POST("/users/token/renew_access", server.reNewAccessToken)
+	
 
 	// Customer routes
 	router.POST("/customers", server.createCustomer)
@@ -19,7 +22,6 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
 	// Auth user routes 
-	authRouter.POST("/users", server.createUser)
 	authRouter.GET("/users/:id", server.getUser)
 	authRouter.GET("/users", server.listUsers)
 	authRouter.DELETE("/users/:id", server.deleteUser)
