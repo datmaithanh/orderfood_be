@@ -25,4 +25,15 @@ run:
 build:
 	./build_linux_amd64.sh
 
-PHONY: postgres createdb dropdb createschema migrateup migratedown sqlc run build
+protocode:
+	rm -f pb/*.go
+	protoc --proto_path=proto --proto_path=. \
+	--go_out=pb --go_opt=paths=source_relative \
+	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	proto/*.proto
+
+
+evans:
+	evans --host localhost --port 9090 --package pb -r repl
+
+PHONY: postgres createdb dropdb createschema migrateup migratedown sqlc run build protocode evans
