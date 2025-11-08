@@ -1,3 +1,7 @@
+SET TIME ZONE 'Asia/Ho_Chi_Minh';
+
+ALTER DATABASE neondb SET timezone TO 'Asia/Ho_Chi_Minh';
+
 CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
   "username" varchar UNIQUE NOT NULL,
@@ -5,7 +9,7 @@ CREATE TABLE "users" (
   "full_name" varchar NOT NULL,
   "role" varchar NOT NULL DEFAULT 'staff',
   "email" varchar UNIQUE NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "customers" (
@@ -13,13 +17,13 @@ CREATE TABLE "customers" (
   "full_name" varchar NOT NULL,
   "phone_number" varchar(15) UNIQUE NOT NULL,
   "email" varchar NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "categories" (
   "id" bigserial PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "menus" (
@@ -28,7 +32,7 @@ CREATE TABLE "menus" (
   "price" numeric(10,2) NOT NULL,
   "category_id" bigint NOT NULL,
   "status" bool NOT NULL DEFAULT 'false',
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "tables" (
@@ -37,7 +41,7 @@ CREATE TABLE "tables" (
   "qr_text" varchar(255) NOT NULL DEFAULT '',
   "qr_image_url" varchar(255) NOT NULL DEFAULT '',
   "status" varchar(20) NOT NULL DEFAULT 'available',
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "orders" (
@@ -47,7 +51,7 @@ CREATE TABLE "orders" (
   "table_id" bigint NOT NULL,
   "status" varchar(20) NOT NULL DEFAULT 'pending',
   "total_price" numeric(10,2) NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "order_item" (
@@ -58,7 +62,7 @@ CREATE TABLE "order_item" (
   "price" numeric(10,2) NOT NULL,
   "note_item" varchar(255)NOT NULL DEFAULT '',
   "status" varchar(20) NOT NULL DEFAULT 'pending',
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "payments" (
@@ -67,7 +71,7 @@ CREATE TABLE "payments" (
   "amount" numeric(10,2) NOT NULL,
   "payment_method" varchar(20) NOT NULL,
   "status" varchar(20) NOT NULL DEFAULT 'pending',
-  "created_at" timestamp NOT NULL DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON "users" ("username");

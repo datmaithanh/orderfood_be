@@ -76,7 +76,7 @@ func (x *LoginUserRequest) GetPassword() string {
 
 type LoginUserResponse struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	SessionToken          string                 `protobuf:"bytes,1,opt,name=session_token,json=sessionToken,proto3" json:"session_token,omitempty"`
+	SessionId             string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	AccessToken           string                 `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	RefreshToken          string                 `protobuf:"bytes,3,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	AccessTokenExpiresAt  *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=access_token_expires_at,json=accessTokenExpiresAt,proto3" json:"access_token_expires_at,omitempty"`
@@ -116,9 +116,9 @@ func (*LoginUserResponse) Descriptor() ([]byte, []int) {
 	return file_rpc_login_user_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *LoginUserResponse) GetSessionToken() string {
+func (x *LoginUserResponse) GetSessionId() string {
 	if x != nil {
-		return x.SessionToken
+		return x.SessionId
 	}
 	return ""
 }
@@ -166,9 +166,10 @@ const file_rpc_login_user_proto_rawDesc = "" +
 	"user.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n" +
 	"\x10LoginUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xc6\x02\n" +
-	"\x11LoginUserResponse\x12#\n" +
-	"\rsession_token\x18\x01 \x01(\tR\fsessionToken\x12!\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xc0\x02\n" +
+	"\x11LoginUserResponse\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12!\n" +
 	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x03 \x01(\tR\frefreshToken\x12Q\n" +
 	"\x17access_token_expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x14accessTokenExpiresAt\x12S\n" +

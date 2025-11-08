@@ -24,6 +24,7 @@ func main() {
 	store := db.NewStore(conn)
 
 	runGrpcServer(store)
+	// runGinServer(store)
 
 }
 
