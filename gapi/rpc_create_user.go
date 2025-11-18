@@ -19,7 +19,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	user, err := server.store.CreateUser(ctx, db.CreateUserParams{
 		Username:     req.GetUsername(),
 		HashPassword: hashedPassword,
-		FullName:     req.GetFullname(),
+		FullName:     req.GetFullName(),
 		Email:        req.GetEmail(),
 	})
 	if err != nil {
@@ -29,7 +29,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	userResponse := &pb.CreateUserResponse{
 		User: &pb.User{
 			Username:  user.Username,
-			Fullname:  user.FullName,
+			FullName:  user.FullName,
 			Email:     user.Email,
 			CreatedAt: timestamppb.New(user.CreatedAt) ,
 		},

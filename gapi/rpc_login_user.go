@@ -58,7 +58,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 		RefreshTokenExpiresAt: timestamppb.New(refreshPayload.ExpiredAt),
 		User: &pb.User{
 			Username:  user.Username,
-			Fullname:  user.FullName,
+			FullName:  user.FullName,
 			Email:     user.Email,
 			CreatedAt: timestamppb.New(user.CreatedAt),
 		},
