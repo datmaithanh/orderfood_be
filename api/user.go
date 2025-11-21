@@ -174,10 +174,19 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 	updateParams := db.UpdateUserParams{
-		ID:       user.ID,
-		FullName: req.FullName,
-		Role:     req.Role,
-		Email:    req.Email,
+		ID: user.ID,
+		FullName: sql.NullString{
+			String: req.FullName,
+			Valid:  true,
+		},
+		Role: sql.NullString{
+			String: req.Role,
+			Valid:  true,
+		},
+		Email: sql.NullString{
+			String: req.Email,
+			Valid:  true,
+		},
 	}
 	updatedUser, err := server.store.UpdateUser(ctx, updateParams)
 	if err != nil {
@@ -308,12 +317,12 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		CreateAt: user.CreatedAt,
 	}
 	loginUserResponse := loginUserResponse{
-		SessionID: 		  session.ID,
-		AccessToken: accessToken,
+		SessionID:            session.ID,
+		AccessToken:          accessToken,
 		AccessTokenExpiesAt:  accessPayload.ExpiredAt,
-		RefreshToken:        refreshToken,
+		RefreshToken:         refreshToken,
 		RefreshTokenExpiesAt: refreshPayload.ExpiredAt,
-		User: UserResponse,
+		User:                 UserResponse,
 	}
 	ctx.JSON(http.StatusOK, loginUserResponse)
 }

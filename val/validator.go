@@ -8,7 +8,7 @@ import (
 
 var (
 	isValidUsername = regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString
-	isValidFullname = regexp.MustCompile(`^[a-zA-Z\\s]+$`).MatchString
+	isValidFullname = regexp.MustCompile(`^[a-zA-Z\s]+$`).MatchString
 )
 
 func ValidateString(value string, minLen int, maxLen int) error {
@@ -43,7 +43,7 @@ func ValidatePassword(password string) error {
 	return ValidateString(password, 6, 100)
 }
 
-func ValidateEmail (email string) error {
+func ValidateEmail(email string) error {
 	if err := ValidateString(email, 3, 200); err != nil {
 		return err
 	}
@@ -51,6 +51,27 @@ func ValidateEmail (email string) error {
 	_ ,err := mail.ParseAddress(email)
 	if err != nil {
 		return fmt.Errorf("invalid email format")
+	}
+	return nil
+}
+
+func ValidateRole(role string) error {
+	allowedRoles := map[string]bool{
+		"admin":    true,
+		"staff":     true,
+	}
+	if role == "" {
+		return nil
+	}
+	if !allowedRoles[role] {
+		return fmt.Errorf("role must be one of the following: admin, staff")
+	}
+	return nil
+}
+
+func ValidateId(id int64) error {
+	if id <= 0 {
+		return fmt.Errorf("id must be a positive integer")
 	}
 	return nil
 }

@@ -24,9 +24,10 @@ OFFSET $2;
 
 -- name: UpdateUser :one
 UPDATE users
-SET full_name = $2,
-    role = $3,
-    email = $4
+SET 
+    full_name = COALESCE(sqlc.narg(full_name), full_name),
+    role = COALESCE(sqlc.narg(role), role),
+    email = COALESCE(sqlc.narg(email), email)
 WHERE id = $1
 RETURNING *;
 

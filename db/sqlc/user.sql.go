@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -142,18 +143,19 @@ func (q *Queries) ListUser(ctx context.Context, arg ListUserParams) ([]User, err
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET full_name = $2,
-    role = $3,
-    email = $4
+SET 
+    full_name = COALESCE($2, full_name),
+    role = COALESCE($3, role),
+    email = COALESCE($4, email)
 WHERE id = $1
 RETURNING id, username, hash_password, full_name, role, email, created_at
 `
 
 type UpdateUserParams struct {
 	ID       int64
-	FullName string
-	Role     string
-	Email    string
+	FullName sql.NullString
+	Role     sql.NullString
+	Email    sql.NullString
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
