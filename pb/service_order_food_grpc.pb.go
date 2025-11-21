@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OrderFoodService_CreateUser_FullMethodName = "/pb.OrderFoodService/CreateUser"
-	OrderFoodService_UpdateUser_FullMethodName = "/pb.OrderFoodService/UpdateUser"
-	OrderFoodService_LoginUser_FullMethodName  = "/pb.OrderFoodService/LoginUser"
+	OrderFoodService_CreateUser_FullMethodName         = "/pb.OrderFoodService/CreateUser"
+	OrderFoodService_UpdateUser_FullMethodName         = "/pb.OrderFoodService/UpdateUser"
+	OrderFoodService_UpdatePasswordUser_FullMethodName = "/pb.OrderFoodService/UpdatePasswordUser"
+	OrderFoodService_LoginUser_FullMethodName          = "/pb.OrderFoodService/LoginUser"
 )
 
 // OrderFoodServiceClient is the client API for OrderFoodService service.
@@ -30,6 +31,7 @@ const (
 type OrderFoodServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	UpdatePasswordUser(ctx context.Context, in *UpdatePasswordUserRequest, opts ...grpc.CallOption) (*UpdatePasswordUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 }
 
@@ -61,6 +63,16 @@ func (c *orderFoodServiceClient) UpdateUser(ctx context.Context, in *UpdateUserR
 	return out, nil
 }
 
+func (c *orderFoodServiceClient) UpdatePasswordUser(ctx context.Context, in *UpdatePasswordUserRequest, opts ...grpc.CallOption) (*UpdatePasswordUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePasswordUserResponse)
+	err := c.cc.Invoke(ctx, OrderFoodService_UpdatePasswordUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *orderFoodServiceClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginUserResponse)
@@ -77,6 +89,7 @@ func (c *orderFoodServiceClient) LoginUser(ctx context.Context, in *LoginUserReq
 type OrderFoodServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	UpdatePasswordUser(context.Context, *UpdatePasswordUserRequest) (*UpdatePasswordUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	mustEmbedUnimplementedOrderFoodServiceServer()
 }
@@ -93,6 +106,9 @@ func (UnimplementedOrderFoodServiceServer) CreateUser(context.Context, *CreateUs
 }
 func (UnimplementedOrderFoodServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedOrderFoodServiceServer) UpdatePasswordUser(context.Context, *UpdatePasswordUserRequest) (*UpdatePasswordUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePasswordUser not implemented")
 }
 func (UnimplementedOrderFoodServiceServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
@@ -154,6 +170,24 @@ func _OrderFoodService_UpdateUser_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderFoodService_UpdatePasswordUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderFoodServiceServer).UpdatePasswordUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderFoodService_UpdatePasswordUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderFoodServiceServer).UpdatePasswordUser(ctx, req.(*UpdatePasswordUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OrderFoodService_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginUserRequest)
 	if err := dec(in); err != nil {
@@ -186,6 +220,10 @@ var OrderFoodService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUser",
 			Handler:    _OrderFoodService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "UpdatePasswordUser",
+			Handler:    _OrderFoodService_UpdatePasswordUser_Handler,
 		},
 		{
 			MethodName: "LoginUser",
