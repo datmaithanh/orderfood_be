@@ -174,7 +174,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 	updateParams := db.UpdateUserParams{
-		ID: user.ID,
+		Username: user.Username,
 		FullName: sql.NullString{
 			String: req.FullName,
 			Valid:  true,

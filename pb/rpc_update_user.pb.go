@@ -23,7 +23,7 @@ const (
 
 type UpdateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	FullName      *string                `protobuf:"bytes,3,opt,name=full_name,json=fullName,proto3,oneof" json:"full_name,omitempty"`
 	Role          *string                `protobuf:"bytes,2,opt,name=role,proto3,oneof" json:"role,omitempty"`
 	Email         *string                `protobuf:"bytes,4,opt,name=email,proto3,oneof" json:"email,omitempty"`
@@ -61,11 +61,11 @@ func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_rpc_update_user_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UpdateUserRequest) GetId() int64 {
+func (x *UpdateUserRequest) GetUsername() string {
 	if x != nil {
-		return x.Id
+		return x.Username
 	}
-	return 0
+	return ""
 }
 
 func (x *UpdateUserRequest) GetFullName() string {
@@ -138,9 +138,9 @@ var File_rpc_update_user_proto protoreflect.FileDescriptor
 const file_rpc_update_user_proto_rawDesc = "" +
 	"\n" +
 	"\x15rpc_update_user.proto\x12\x02pb\x1a\n" +
-	"user.proto\"\x9a\x01\n" +
-	"\x11UpdateUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12 \n" +
+	"user.proto\"\xa6\x01\n" +
+	"\x11UpdateUserRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12 \n" +
 	"\tfull_name\x18\x03 \x01(\tH\x00R\bfullName\x88\x01\x01\x12\x17\n" +
 	"\x04role\x18\x02 \x01(\tH\x01R\x04role\x88\x01\x01\x12\x19\n" +
 	"\x05email\x18\x04 \x01(\tH\x02R\x05email\x88\x01\x01B\f\n" +

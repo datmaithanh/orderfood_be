@@ -15,13 +15,21 @@ import (
 
 func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, unauthenticatedError(err)
+	}
+
 	violations := validateUpdateUserRequest(req)
 	if violations != nil {
 		return nil, invalidArgumentError(violations)
 	}
-	
+	if authPayload.Username != req.GetUsername() {
+		return nil, status.Errorf(codes.PermissionDenied, "you can only update your own account")
+	}
+
 	arg := db.UpdateUserParams{
-		ID: req.GetId(),
+		Username: req.Username,
 		FullName: sql.NullString{
 			String: req.GetFullName(),
 			Valid:  req.FullName != nil,
@@ -40,7 +48,7 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
-		return nil, status.Errorf(codes.Internal, "faild to update user", err)
+		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
 	userResponse := &pb.UpdateUserResponse{
@@ -56,7 +64,7 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 }
 
 func validateUpdateUserRequest(req *pb.UpdateUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
-	if err := val.ValidateId(req.GetId()); err != nil {
+	if err := val.ValidateUsername(req.GetUsername()); err != nil {
 		violations = append(violations, fieldViolation("username", err))
 	}
 

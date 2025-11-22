@@ -33,7 +33,7 @@ func (server *Server) UpdatePasswordUser(ctx context.Context, req *pb.UpdatePass
 		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 		}
-		return nil, status.Errorf(codes.Internal, "faild to update user password", err)
+		return nil, status.Errorf(codes.Internal, "faild to update user password: %v", err)
 	}
 
 	userResponse := &pb.UpdatePasswordUserResponse{

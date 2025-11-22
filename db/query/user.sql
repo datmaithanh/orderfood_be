@@ -28,7 +28,7 @@ SET
     full_name = COALESCE(sqlc.narg(full_name), full_name),
     role = COALESCE(sqlc.narg(role), role),
     email = COALESCE(sqlc.narg(email), email)
-WHERE id = $1
+WHERE username = $1
 RETURNING *;
 
 -- name: UpdateUserWithPassword :one

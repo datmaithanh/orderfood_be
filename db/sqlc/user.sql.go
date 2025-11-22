@@ -147,12 +147,12 @@ SET
     full_name = COALESCE($2, full_name),
     role = COALESCE($3, role),
     email = COALESCE($4, email)
-WHERE id = $1
+WHERE username = $1
 RETURNING id, username, hash_password, full_name, role, email, created_at
 `
 
 type UpdateUserParams struct {
-	ID       int64
+	Username string
 	FullName sql.NullString
 	Role     sql.NullString
 	Email    sql.NullString
@@ -160,7 +160,7 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
-		arg.ID,
+		arg.Username,
 		arg.FullName,
 		arg.Role,
 		arg.Email,
