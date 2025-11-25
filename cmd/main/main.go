@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"net"
 	"net/http"
@@ -12,7 +13,9 @@ import (
 	"github.com/datmaithanh/orderfood/gapi"
 	"github.com/datmaithanh/orderfood/pb"
 	"github.com/datmaithanh/orderfood/utils"
+	"github.com/datmaithanh/orderfood/worker"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/hibiken/asynq"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -23,6 +26,7 @@ import (
 
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	utils.LoadConfig()
 	conn, err := sql.Open(utils.DBDriver, utils.DBSource)
 	if err != nil {
 		log.Fatal().Msgf("cannot connect to db: %s", err)
@@ -30,14 +34,31 @@ func main() {
 
 	store := db.NewStore(conn)
 
-	go runGatewayServer(store)
-	runGrpcServer(store)
-	// runGinServer(store)
+	redisOpt := asynq.RedisClientOpt{
+		Addr:    utils.Redis_Addr,
+		Password: utils.Redis_Password,
+		TLSConfig: &tls.Config{
+		},
+	}
+
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+	go runTaskProcessor(redisOpt, store)
+	go runGatewayServer(store, taskDistributor)
+	runGrpcServer(store, taskDistributor)
+}
+
+func runTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) {
+	processor := worker.NewRedisTaskProcessor(redisOpt, store)
+	log.Info().Msg("start task processor")
+	err := processor.Start()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to start task processor")
+	}
 
 }
 
-func runGrpcServer(store db.Store) {
-	server, err := gapi.NewServer(store)
+func runGrpcServer(store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(store, taskDistributor)
 	if err != nil {
 		log.Fatal().Msgf("Cannot create grpc server: %s", err)
 	}
@@ -60,8 +81,8 @@ func runGrpcServer(store db.Store) {
 	}
 }
 
-func runGatewayServer(store db.Store) {
-	server, err := gapi.NewServer(store)
+func runGatewayServer(store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(store, taskDistributor)
 	if err != nil {
 		log.Fatal().Msgf("Cannot create HTTP gateway server: %s", err)
 	}

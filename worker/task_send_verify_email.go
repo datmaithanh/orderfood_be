@@ -7,6 +7,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/hibiken/asynq"
+	"github.com/rs/zerolog/log"
 )
 
 const TaskTypeSendVerifyEmail = "task:send_verify_email"
@@ -22,11 +23,12 @@ func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyEmail(ctx conte
 	}
 
 	task := asynq.NewTask(TaskTypeSendVerifyEmail, jsonPayload, opts...)
-	_, err = distributor.client.EnqueueContext(ctx, task)
+	info, err := distributor.client.EnqueueContext(ctx, task)
 	if err != nil {
 		return fmt.Errorf("failed to enqueue task: %w", err)
 	}
-
+	log.Info().Str("type", task.Type()).Bytes("payload", task.Payload()).
+		Str("queue", info.Queue).Int("max_retry", info.MaxRetry).Msg("enqueued task")
 	return nil
 }
 
@@ -44,7 +46,8 @@ func (process *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Contex
 		}
 		return fmt.Errorf("faild to get user: %w", err)
 	}
-	fmt.Printf("send verify email to user: %v, email: %v\n", user.Username, user.Email)
+	log.Info().Str("type", task.Type()).Bytes("payload", task.Payload()).
+		Str("email", user.Email).Msg("processed task")
 
 	return nil
 
