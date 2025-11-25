@@ -28,7 +28,7 @@ type Querier interface {
 	DeleteOrderItem(ctx context.Context, id int64) error
 	DeletePayment(ctx context.Context, id int64) error
 	DeleteTable(ctx context.Context, id int64) error
-	DeleteUser(ctx context.Context, id int64) error
+	DeleteUser(ctx context.Context, username string) error
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetCustomer(ctx context.Context, id int64) (Customer, error)
 	GetMaxTableID(ctx context.Context) (interface{}, error)
@@ -38,7 +38,7 @@ type Querier interface {
 	GetPayment(ctx context.Context, id int64) (Payment, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTable(ctx context.Context, id int64) (Table, error)
-	GetUser(ctx context.Context, id int64) (User, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCategory(ctx context.Context, arg ListCategoryParams) ([]Category, error)
 	ListCustomer(ctx context.Context, arg ListCustomerParams) ([]Customer, error)

@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/datmaithanh/orderfood/api"
 	db "github.com/datmaithanh/orderfood/db/sqlc"
@@ -14,15 +14,18 @@ import (
 	"github.com/datmaithanh/orderfood/utils"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	conn, err := sql.Open(utils.DBDriver, utils.DBSource)
 	if err != nil {
-		log.Fatal("cannot connect to db:", err)
+		log.Fatal().Msgf("cannot connect to db: %s", err)
 	}
 
 	store := db.NewStore(conn)
@@ -36,29 +39,31 @@ func main() {
 func runGrpcServer(store db.Store) {
 	server, err := gapi.NewServer(store)
 	if err != nil {
-		log.Fatal("Cannot create grpc server: %w", err)
+		log.Fatal().Msgf("Cannot create grpc server: %s", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(gapi.GrpcLoger)
+
+	grpcServer := grpc.NewServer(grpcLogger)
 	pb.RegisterOrderFoodServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", utils.GrpcServerAddress)
 	if err != nil {
-		log.Fatal("Cannot create listener: %w", err)
+		log.Fatal().Msgf("Cannot create listener: %s", err)
 	}
 
 	log.Printf("start gRPC server at %s", listener.Addr().String())
 	err = grpcServer.Serve(listener)
 	if err != nil {
-		log.Fatal("Cannot start gRPC server: %w", err)
+		log.Fatal().Msgf("Cannot start gRPC server: %s", err)
 	}
 }
 
 func runGatewayServer(store db.Store) {
 	server, err := gapi.NewServer(store)
 	if err != nil {
-		log.Fatal("Cannot create HTTP gateway server: %w", err)
+		log.Fatal().Msgf("Cannot create HTTP gateway server: %s", err)
 	}
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
@@ -74,7 +79,7 @@ func runGatewayServer(store db.Store) {
 	defer called()
 	err = pb.RegisterOrderFoodServiceHandlerServer(ctx, grpcMux, server)
 	if err != nil {
-		log.Fatal("Cannot register gateway server: %w", err)
+		log.Fatal().Msgf("Cannot register gateway server: %s", err)
 	}
 
 	mux := http.NewServeMux()
@@ -82,23 +87,24 @@ func runGatewayServer(store db.Store) {
 
 	listener, err := net.Listen("tcp", utils.ServerAddress)
 	if err != nil {
-		log.Fatal("Cannot create listener: %w", err)
+		log.Fatal().Msgf("Cannot create listener: %s", err)
 	}
 
 	log.Printf("start HTTP gateway server at %s", listener.Addr().String())
-	err = http.Serve(listener, mux)
+	handler := gapi.HTTPLoger(mux)
+	err = http.Serve(listener, handler)
 	if err != nil {
-		log.Fatal("Cannot start HTTP gateway server: %w", err)
+		log.Fatal().Msgf("Cannot start HTTP gateway server: %s", err)
 	}
 }
 
 func runGinServer(store db.Store) {
 	server, err := api.NewServer(store)
 	if err != nil {
-		log.Fatal("Cannot run server: %w", err)
+		log.Fatal().Msgf("Cannot run server: %s", err)
 	}
 	err = server.Start(utils.ServerAddress)
 	if err != nil {
-		log.Fatal("cannot start server:", err)
+		log.Fatal().Msgf("cannot start server: %s", err)
 	}
 }

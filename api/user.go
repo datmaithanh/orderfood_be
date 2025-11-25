@@ -56,7 +56,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 type getUserRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
+	Username string `uri:"username" binding:"required,alphanum"`
 }
 
 type getUserResponse struct {
@@ -73,7 +73,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.store.GetUser(ctx, req.ID)
+	user, err := server.store.GetUser(ctx, req.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
@@ -121,7 +121,7 @@ func (server *Server) listUsers(ctx *gin.Context) {
 }
 
 type deleteUserRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
+	Username string `uri:"username" binding:"required,alphanum"`
 }
 
 func (server *Server) deleteUser(ctx *gin.Context) {
@@ -130,12 +130,12 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	_, err := server.store.GetUser(ctx, req.ID)
+	_, err := server.store.GetUser(ctx, req.Username)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
 	}
-	err = server.store.DeleteUser(ctx, req.ID)
+	err = server.store.DeleteUser(ctx, req.Username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -147,7 +147,7 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 }
 
 type updateUserIdRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
+	Username string `uri:"username" binding:"required,alphanum"`
 }
 
 type updateUserRequest struct {
@@ -162,7 +162,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.store.GetUser(ctx, idReq.ID)
+	user, err := server.store.GetUser(ctx, idReq.Username)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
@@ -213,7 +213,7 @@ func (server *Server) updateUserWithPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	_, err := server.store.GetUser(ctx, idReq.ID)
+	_, err := server.store.GetUser(ctx, idReq.Username)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
@@ -231,7 +231,7 @@ func (server *Server) updateUserWithPassword(ctx *gin.Context) {
 	}
 
 	updateUserPassword, err := server.store.UpdateUserWithPassword(ctx, db.UpdateUserWithPasswordParams{
-		ID:           idReq.ID,
+		Username:           idReq.Username,
 		HashPassword: hashedPassword,
 	})
 	if err != nil {

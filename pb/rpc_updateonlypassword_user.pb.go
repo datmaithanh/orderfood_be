@@ -23,7 +23,7 @@ const (
 
 type UpdatePasswordUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -59,11 +59,11 @@ func (*UpdatePasswordUserRequest) Descriptor() ([]byte, []int) {
 	return file_rpc_updateonlypassword_user_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UpdatePasswordUserRequest) GetId() int64 {
+func (x *UpdatePasswordUserRequest) GetUsername() string {
 	if x != nil {
-		return x.Id
+		return x.Username
 	}
-	return 0
+	return ""
 }
 
 func (x *UpdatePasswordUserRequest) GetPassword() string {
@@ -122,9 +122,9 @@ var File_rpc_updateonlypassword_user_proto protoreflect.FileDescriptor
 const file_rpc_updateonlypassword_user_proto_rawDesc = "" +
 	"\n" +
 	"!rpc_updateonlypassword_user.proto\x12\x02pb\x1a\n" +
-	"user.proto\"G\n" +
-	"\x19UpdatePasswordUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"user.proto\"S\n" +
+	"\x19UpdatePasswordUserRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\":\n" +
 	"\x1aUpdatePasswordUserResponse\x12\x1c\n" +
 	"\x04user\x18\x01 \x01(\v2\b.pb.UserR\x04userB%Z#github.com/datmaithanh/orderfood/pbb\x06proto3"

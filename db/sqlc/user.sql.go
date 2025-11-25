@@ -50,21 +50,21 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
-WHERE id = $1
+WHERE username = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, id)
+func (q *Queries) DeleteUser(ctx context.Context, username string) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, username)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
 SELECT id, username, hash_password, full_name, role, email, created_at FROM users
-WHERE id = $1 LIMIT 1
+WHERE username = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -181,17 +181,17 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 const updateUserWithPassword = `-- name: UpdateUserWithPassword :one
 UPDATE users
 SET hash_password = $2
-WHERE id = $1
+WHERE username = $1
 RETURNING id, username, hash_password, full_name, role, email, created_at
 `
 
 type UpdateUserWithPasswordParams struct {
-	ID           int64
+	Username     string
 	HashPassword string
 }
 
 func (q *Queries) UpdateUserWithPassword(ctx context.Context, arg UpdateUserWithPasswordParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserWithPassword, arg.ID, arg.HashPassword)
+	row := q.db.QueryRowContext(ctx, updateUserWithPassword, arg.Username, arg.HashPassword)
 	var i User
 	err := row.Scan(
 		&i.ID,

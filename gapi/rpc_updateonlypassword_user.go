@@ -26,7 +26,7 @@ func (server *Server) UpdatePasswordUser(ctx context.Context, req *pb.UpdatePass
 		return nil, status.Errorf(codes.Internal, "fail to hash password: %v", err)
 	}
 	user, err := server.store.UpdateUserWithPassword(ctx, db.UpdateUserWithPasswordParams{
-		ID:           req.GetId(),
+		Username:           req.GetUsername(),
 		HashPassword: hashedPassword,
 	})
 	if err != nil {
@@ -49,7 +49,7 @@ func (server *Server) UpdatePasswordUser(ctx context.Context, req *pb.UpdatePass
 }
 
 func validateUpdatePasswordUserRequest(req *pb.UpdatePasswordUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
-	if err := val.ValidateId(req.GetId()); err != nil {
+	if err := val.ValidateUsername(req.GetUsername()); err != nil {
 		violations = append(violations, fieldViolation("id", err))
 	}
 

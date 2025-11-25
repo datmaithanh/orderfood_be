@@ -10,7 +10,7 @@ INSERT INTO users (
 
 -- name: GetUser :one
 SELECT * FROM users
-WHERE id = $1 LIMIT 1;
+WHERE username = $1 LIMIT 1;
 
 -- name: GetUserByUsername :one
 SELECT * FROM users
@@ -34,13 +34,13 @@ RETURNING *;
 -- name: UpdateUserWithPassword :one
 UPDATE users
 SET hash_password = $2
-WHERE id = $1
+WHERE username = $1
 RETURNING *;
 
 
 -- name: DeleteUser :exec
 DELETE FROM users
-WHERE id = $1;
+WHERE username = $1;
 
 
 
