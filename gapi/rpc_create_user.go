@@ -26,38 +26,39 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "fail to hash password: %v", err)
 	}
-	user, err := server.store.CreateUser(ctx, db.CreateUserParams{
-		Username:     req.GetUsername(),
-		HashPassword: hashedPassword,
-		FullName:     req.GetFullName(),
-		Email:        req.GetEmail(),
-	})
+
+	arg := db.CreateUserTxParams{
+		CreateUserParams: db.CreateUserParams{
+			Username:     req.GetUsername(),
+			FullName:     req.GetFullName(),
+			Email:        req.GetEmail(),
+			HashPassword: hashedPassword,
+		},
+		AfterCreate: func(user db.User) error {
+			taskPayload := &worker.PayloadSendVerifyEmail{
+				Username: user.Username,
+			}
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second),
+				asynq.Queue(worker.QueueCritical),
+			}
+			return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+		},
+	}
+
+	user, err := server.store.CreateUserTx(ctx, arg)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "fail to create user: %v", err)
 
 	}
 
-	taskPayload := &worker.PayloadSendVerifyEmail{
-		Username: user.Username,
-	}
-
-	opts := []asynq.Option{
-		asynq.MaxRetry(10),
-		asynq.ProcessIn(10 * time.Second),
-		asynq.Queue(worker.QueueCritical),
-	}
-
-	err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "fail to distribute task to send verify email: %v", err)
-	}
-
 	userResponse := &pb.CreateUserResponse{
 		User: &pb.User{
-			Username:  user.Username,
-			FullName:  user.FullName,
-			Email:     user.Email,
-			CreatedAt: timestamppb.New(user.CreatedAt),
+			Username:  user.User.Username,
+			FullName:  user.User.FullName,
+			Email:     user.User.Email,
+			CreatedAt: timestamppb.New(user.User.CreatedAt),
 		},
 	}
 	return userResponse, nil
