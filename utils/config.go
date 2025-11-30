@@ -15,7 +15,7 @@ const (
 	RefreshTokenDuration  time.Duration = 7 * 24 * time.Hour
 	UrlToWebsiteOrderFood               = "http://localhost:3000"
 	CLOUDINARY_URL                      = "cloudinary://535384412283863:9kzrBUZX3R-Kh8-Z82Okh4UcDgQ@dxnuzxb59"
-	END_POINT                          = "http://localhost:8888"
+	END_POINT                          = "https://api-dev.datmt.id.vn"
 )
 
 var (
