@@ -33,6 +33,10 @@ func main() {
 
 	store := db.NewStore(conn)
 
+	utils.Keepliveserver(utils.END_POINT + `/ping`)
+	runGinServer(store)
+
+	
 	// redisOpt := asynq.RedisClientOpt{
 	// 	Addr:    utils.Redis_Addr,
 	// 	Password: utils.Redis_Password,
@@ -44,7 +48,6 @@ func main() {
 	// go runTaskProcessor(redisOpt, store)
 	// go runGatewayServer(store, taskDistributor)
 	// runGrpcServer(store, taskDistributor)
-	runGinServer(store)
 
 }
 

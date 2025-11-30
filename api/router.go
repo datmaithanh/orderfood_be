@@ -4,24 +4,25 @@ import "github.com/gin-gonic/gin"
 
 func (server *Server) setupRouter() *gin.Engine {
 	router := gin.Default()
-	
+
 	// Public routes
+
+	// dummy route for health check
+	router.GET("/ping", server.dummyHandlePing)
 
 	// User routes
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 	router.POST("/users/token/renew_access", server.reNewAccessToken)
-	
 
 	// Customer routes
 	router.POST("/customers", server.createCustomer)
 	router.GET("/customers/:id", server.getCustomer)
 
-
 	// Protected routes
 	authRouter := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	// Auth user routes 
+	// Auth user routes
 	authRouter.GET("/users/:id", server.getUser)
 	authRouter.GET("/users", server.listUsers)
 	authRouter.DELETE("/users/:id", server.deleteUser)
@@ -31,7 +32,7 @@ func (server *Server) setupRouter() *gin.Engine {
 	// Auth customer routes
 	authRouter.GET("/customers", server.listCustomer)
 	authRouter.DELETE("/customers/:id", server.deleteCustomer)
-	
+
 	//Auth Category routes
 	authRouter.POST("/categories", server.createCategory)
 	authRouter.GET("/categories/:id", server.getCategory)
@@ -74,7 +75,6 @@ func (server *Server) setupRouter() *gin.Engine {
 	authRouter.GET("/payments", server.listPayments)
 	authRouter.DELETE("/payments/:id", server.deletePayment)
 	authRouter.PATCH("/payments/status/:id", server.updatePaymentStatus)
-
 
 	server.router = router
 	return router
