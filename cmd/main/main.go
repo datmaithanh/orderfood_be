@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"database/sql"
 	"net"
 	"net/http"
@@ -34,17 +33,19 @@ func main() {
 
 	store := db.NewStore(conn)
 
-	redisOpt := asynq.RedisClientOpt{
-		Addr:    utils.Redis_Addr,
-		Password: utils.Redis_Password,
-		TLSConfig: &tls.Config{
-		},
-	}
+	// redisOpt := asynq.RedisClientOpt{
+	// 	Addr:    utils.Redis_Addr,
+	// 	Password: utils.Redis_Password,
+	// 	TLSConfig: &tls.Config{
+	// 	},
+	// }
 
-	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
-	go runTaskProcessor(redisOpt, store)
-	go runGatewayServer(store, taskDistributor)
-	runGrpcServer(store, taskDistributor)
+	// taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+	// go runTaskProcessor(redisOpt, store)
+	// go runGatewayServer(store, taskDistributor)
+	// runGrpcServer(store, taskDistributor)
+	runGinServer(store)
+
 }
 
 func runTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) {
